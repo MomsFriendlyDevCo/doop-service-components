@@ -56,7 +56,7 @@ app.service('$components', {
 	* @param {string|array<string>} target The camelCase / snake_case / kebab-case name of the component(s) to run the method on (if it exists)
 	* @param {string} method The method name to execute
 	* @param {*} [payload...] Additional method arguments to pass when running the function
-	* @returns {Promise<array>} A Promise.all() wrapped response for all methods run, the length of the eventual array can be used to determine if any events were actually called
+	* @returns {Promise<array>} An eventual array response for all components found with a sub-array of all component methods run
 	*/
 	tell: (componentName, method, ...args) => {
 		var nameFilters = new Set( // Create lookup set of names to filter by (after kebab casing to match Vue's internal system)
@@ -69,7 +69,6 @@ app.service('$components', {
 				_.isFunction(component[method]) // For components with a valid callable method...
 				&& component[method].apply(component, args) // Call the methods with the payload
 			)))
-			|> Promise.all;
 	},
 
 

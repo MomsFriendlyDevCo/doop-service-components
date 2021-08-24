@@ -54,7 +54,7 @@ app.service('$components', {
 	* The component must be named, if using just the `{route: String}` property in the compent spec it will not match here
 	* Multiple matches may occur if the component is initalized more than once
 	* @param {string|array<string>} target The camelCase / snake_case / kebab-case name of the component(s) to run the method on (if it exists)
-	* @param {string} method The method name to execute
+	* @param {string|function} method The method name to execute or function to call. If a function the context is set to the current component as well as the first argument of the function
 	* @param {*} [payload...] Additional method arguments to pass when running the function
 	* @returns {Promise<array>} An eventual array response for all components found with a sub-array of all component methods run
 	*/
@@ -65,10 +65,13 @@ app.service('$components', {
 
 		return Object.entries(app.service.$components.entries()) // Fetch all components as a named lookup object
 			.filter(([id, components]) => nameFilters.has(id)) // Filter down to only those that match
-			.map(([id, components]) => Promise.all(components.map(component =>
-				_.isFunction(component[method]) // For components with a valid callable method...
-				&& component[method].apply(component, args) // Call the methods with the payload
-			)))
+			.map(([id, components]) => Promise.all(components.map(component => {
+				if (_.isFunction(method)) { // Method is a function - call on component and await promise
+					return method.call(component, component, ...args);
+				} else if (_.isFunction(component[method])) { // For components with a valid callable method...
+					return component[method].apply(component, args); // Call the method with the component context + first arg + rest of args
+				}
+			})))
 	},
 
 

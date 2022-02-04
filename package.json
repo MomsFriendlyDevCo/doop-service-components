@@ -15,5 +15,8 @@
   "bugs": {
     "url": "https://github.com/MomsFriendlyDevCo/doop-service-components/issues"
   },
-  "homepage": "https://github.com/MomsFriendlyDevCo/doop-service-components#readme"
+  "homepage": "https://github.com/MomsFriendlyDevCo/doop-service-components#readme",
+  "workspaces": [
+    "../*"
+  ]
 }
